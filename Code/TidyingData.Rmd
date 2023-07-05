@@ -1,0 +1,50 @@
+---
+title: "Poorboy et al. Bite force"
+author: "Erika Barthelmess"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+Working on data and analysis for "An Introduction to R for Mammalogists" workshop with Erin and Sean at ASM/IMC 2023 in Anchorage.
+
+Data come from [this paper](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0284094) and can be accessed [from dryad here](https://datadryad.org/stash/dataset/doi:10.5061/dryad.kd51c5bbg)
+
+I'm to cover wrangling and tidying of data
+* dplyr "verbs"
+* pivot_longer() and pivot_wider()
+* getting data into a data frame/tibble format
+
+Start with some data
+```{r}
+#read in data
+library(here)
+library(readxl)
+DF <- read_excel(here("Data","Poorboyetal_Hybridization_Measurements.xls"))
+```
+Now turn on some packages we will need
+```{r}
+library(dplyr)
+#library(tidyverse)
+```
+
+Let's look at the basic structure of our dataset
+```{r}
+str(DF)
+summary(DF)
+```
+To wrangle data with the tidyverse, we use the `dplyr` package "verbs" via these functions:
+* `select()` grabs columns
+* `mutate()` creates new variables
+* `filter()` grabs rows matching particular conditions
+* `slice()` grabs rows NOT SURE I'll do this one
+
+* `summarise()` provides a summary of values
+* `group_by()` allows you to use any of the above operations "by group"
+
+Make sure to pipe!
+
+https://dplyr.tidyverse.org/articles/dplyr.html
+
+
+Probabaly not time for pivot_longer() or pivot_wider().
+
