@@ -1,19 +1,23 @@
 ---
-title: "Poorboy et al. Bite force"
+title: "Wrangling and tidying data"
 author: "Erika Barthelmess"
 date: "`r Sys.Date()`"
 output: html_document
+editor_options:
+  chunk_output_type: console
 ---
+## Introduction
 
-Working on data and analysis for "An Introduction to R for Mammalogists" workshop with Erin and Sean at ASM/IMC 2023 in Anchorage.
+Now that we've learned how to get some data into R and establish a well-organized project, *let's take a look at how to manipulate or "wrangle and tidy"* the data.
 
-Data come from [this paper](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0284094) and can be accessed [from dryad here](https://datadryad.org/stash/dataset/doi:10.5061/dryad.kd51c5bbg)
+The data we will use come from [this paper](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0284094) and can be accessed [from dryad here](https://datadryad.org/stash/dataset/doi:10.5061/dryad.kd51c5bbg)
 
 I'm to cover wrangling and tidying of data
 * dplyr "verbs"
 * pivot_longer() and pivot_wider()
 * getting data into a data frame/tibble format
 
+## Take a look at your dataset
 Start with some data
 ```{r}
 #read in data
@@ -21,7 +25,7 @@ library(here)
 library(readxl)
 DF <- read_excel(here("Data","Poorboyetal_Hybridization_Measurements.xls"))
 ```
-Now turn on some packages we will need
+Now turn on the packages we will need
 ```{r}
 library(dplyr)
 #library(tidyverse)
@@ -29,7 +33,7 @@ library(dplyr)
 
 Let's look at the basic structure of our dataset
 ```{r}
-str(DF)
+str(DF) #output is overall structure of dataset
 summary(DF)
 ```
 To wrangle data with the tidyverse, we use the `dplyr` package "verbs" via these functions:
