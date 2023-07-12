@@ -12,10 +12,18 @@ Now that we've learned how to get some data into R and establish a well-organize
 
 The data we will use come from [this paper](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0284094) and can be accessed [from dryad here](https://datadryad.org/stash/dataset/doi:10.5061/dryad.kd51c5bbg)
 
-I'm to cover wrangling and tidying of data
-* dplyr "verbs"
-* pivot_longer() and pivot_wider()
-* getting data into a data frame/tibble format
+To wrangle data with the tidyverse, we use the `dplyr` package "verbs" via these functions:
+* `select()` grabs columns
+* `filter()` grabs rows matching particular conditions
+* `mutate()` creates new variables
+
+* `summarise()` provides a summary of values
+* `group_by()` allows you to use any of the above operations "by group"
+
+https://dplyr.tidyverse.org/articles/dplyr.html
+
+
+If there is time, we'll also discuss reshaping a data frame with  `pivot_longer()` and`pivot_wider()`.
 
 ## Take a look at your dataset
 Start with some data
@@ -36,19 +44,30 @@ Let's look at the basic structure of our dataset
 str(DF) #output is overall structure of dataset
 summary(DF)
 ```
-To wrangle data with the tidyverse, we use the `dplyr` package "verbs" via these functions:
-* `select()` grabs columns
-* `mutate()` creates new variables
-* `filter()` grabs rows matching particular conditions
-* `slice()` grabs rows NOT SURE I'll do this one
 
-* `summarise()` provides a summary of values
-* `group_by()` allows you to use any of the above operations "by group"
+Let's grab just the columns that include the Category, Sex and Incisor_L:
 
-Make sure to pipe!
+Tidyverse functions accept the data frame as their first argument, and what you want to do to the data frame as next arguments.
 
-https://dplyr.tidyverse.org/articles/dplyr.html
+```{r}
+select(DF, c(Category, Sex, Incisor_L))
+```
 
+Try using select to get just Mass and Incisor_BiteForce
 
-Probabaly not time for pivot_longer() or pivot_wider().
+```{r}
+select(DF, c(Mass, Incisor_BiteForce))
+```
+You can imagine that the "nestedness" could get hard to read, so an alternative is to use *piping* and the piping operator ` %>% `
+
+Thus, we can reach the same end with the following code
+
+```{r}
+DF %>% select(c(Mass, Incisor_BiteForce))
+```
+
+And you can save the result as a new object if you assign it:
+```{r}
+BiteByMass <-DF %>% select(c(Mass, Incisor_BiteForce))
+```
 
