@@ -12,10 +12,17 @@ Now that we've learned how to get some data into R and establish a well-organize
 
 The data we will use come from [this paper](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0284094) and can be accessed [from dryad here](https://datadryad.org/stash/dataset/doi:10.5061/dryad.kd51c5bbg)
 
-I'm to cover wrangling and tidying of data
-* dplyr "verbs"
-* pivot_longer() and pivot_wider()
-* getting data into a data frame/tibble format
+To wrangle data with the tidyverse, we use the `dplyr` package "verbs" via these functions:
+* `select()` grabs columns
+* `filter()` grabs rows matching particular conditions
+* `mutate()` creates new variables
+
+* `summarise()` provides a summary of values
+* `group_by()` allows you to use any of the above operations "by group"
+
+If there is time, we'll also discuss reshaping a data frame with  `pivot_longer()` and`pivot_wider()`.
+
+You can learn more [here](https://dplyr.tidyverse.org/articles/dplyr.html)
 
 ## Take a look at your dataset
 Start with some data
@@ -36,19 +43,93 @@ Let's look at the basic structure of our dataset
 str(DF) #output is overall structure of dataset
 summary(DF)
 ```
-To wrangle data with the tidyverse, we use the `dplyr` package "verbs" via these functions:
-* `select()` grabs columns
-* `mutate()` creates new variables
-* `filter()` grabs rows matching particular conditions
-* `slice()` grabs rows NOT SURE I'll do this one
+## Using `select()` to grab columns
+Let's grab just the columns that include the Category, Sex and Incisor_L using the `select()` function.
 
-* `summarise()` provides a summary of values
-* `group_by()` allows you to use any of the above operations "by group"
+Tidyverse functions accept the data frame as their first argument, and what you want to do to the data frame as next arguments.
 
-Make sure to pipe!
+```{r}
+select(DF, c(Category, Sex, Incisor_L))
+```
 
-https://dplyr.tidyverse.org/articles/dplyr.html
+Try using select to get just Mass and Incisor_BiteForce
 
+```{r}
+select(DF, c(Mass, Incisor_BiteForce))
+```
+You can imagine that the "nestedness" could get hard to read, so an alternative is to use *piping* and the piping operator ` %>% `. Every time you see the piping operator, you can subsitute the words "and then" in your mind.
 
-Probabaly not time for pivot_longer() or pivot_wider().
+Thus, we can reach the same end with the following code
+
+```{r}
+DF %>% select(c(Mass, Incisor_BiteForce)) # read as "Take DF and then select the Mass and Incisor_BiteForce columns
+```
+
+And you can save the result as a new object if you assign it:
+```{r}
+BiteByMass <-DF %>% select(c(Mass, Incisor_BiteForce))
+```
+
+## Choose rows matching particular conditions with `filter()`
+We may need to know what the values of a particular variable are in order to see which rows match a particular value. We can use `unique()` to identify those values.
+
+How many values are there in the Category variable?
+```{r}
+unique(DF$Category)
+```
+And in the Group and Sex variables?
+```{r}
+unique(DF$Group)
+unique(DF$Sex)
+```
+Now look at using `filter()` to grab rows meeting particular conditions.
+
+Let's get all the Red squirrels
+```{r}
+Reds <- DF %>% filter(Category == "Red")
+```
+Let's get all the squirrels less than 225 grams
+
+```{r}
+DF %>% filter(Mass < 225)
+```
+
+We can also combine terms within a `filter()`statement:
+
+Male Douglas squirrels greater than 200 grams:
+
+```{r}
+BigBoyDoug<-DF %>% filter(Sex == "M" & Category == "Doug" & Mass > 200)
+```
+
+## Create new variables with `mutate()`
+
+Let's see how we could add a new variable to the data frame. Say we want to create a new variable called "IncisorSize" that is incisor length X incisor width:
+
+```{r}
+DF<- DF %>% mutate(IncisorSize = Incisor_L*Incisor_W)
+```
+
+## Obtain summary values for specific subests of your data
+A very common approach for getting new summary tables from your data is the combination of using the `group_by()` and `summarise()` functions together.
+
+For example, maybe we want to know mean and sd of body mass by sex
+
+```{r}
+MeanMass <- DF %>% group_by(Sex) %>% summarise(
+  mean_mass = mean(Mass, na.rm = T),
+  sd_mass = sd(Mass, na.rm = T)
+)
+```
+
+Or maybe you want it by sex and category
+```{r}
+MeanMassByCat <- DF %>% group_by(Category, Sex) %>% summarise(
+  mean_mass = mean(Mass, na.rm = T),
+  sd_mass = sd(Mass, na.rm = T)
+) 
+```
+
+## Combining what you've seen
+Create a new data set consisting of female Douglass squirrels. Determine the mean and sd of body mass for the parental range and hybrid zone groups. 
 
