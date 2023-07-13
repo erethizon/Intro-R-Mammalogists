@@ -130,5 +130,6 @@ MeanMassByCat <- DF %>% group_by(Category, Sex) %>% summarise(
 ) 
 ```
 
-
+## Combining what you've seen
+Create a new data set consisting of female Douglass squirrels. Determine the mean and sd of body mass for the parental range and hybrid zone groups. 
 
