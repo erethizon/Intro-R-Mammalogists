@@ -1,5 +1,6 @@
 library(tidyverse)
 library(ggplot2)
+library(ggpubr)
 
 #Set working directory and read in data -----
 
@@ -92,7 +93,7 @@ red.data %>%
     x = "Body mass (grams)",
     y = "Frequency"
   ) +
-  scale_x_continuous(breaks=seq(160,300,by=20))
+  scale_x_continuous(breaks = seq(160,300,by = 20))
 
 #OR
 
@@ -119,7 +120,7 @@ red.data %>%
     x = "Body mass (grams)",
     y = "Frequency"
   ) +
-  scale_x_continuous(breaks=seq(160,300,by=20))
+  scale_x_continuous(breaks = seq(160,300,by = 20))
 
 #OR
 
@@ -131,7 +132,7 @@ red.data %>%
     x = "Body mass (grams)",
     y = "Frequency"
   ) +
-  scale_x_continuous(breaks=seq(160,300,by=20))
+  scale_x_continuous(breaks = seq(160,300,by = 20))
 
 
 
@@ -146,7 +147,7 @@ red.data %>%
     x = "Body mass (grams)",
     y = "Frequency"
   ) +
-  scale_x_continuous(breaks=seq(160,300,by=20))
+  scale_x_continuous(breaks = seq(160,300,by = 20))
 
 
 ##Change the theme ------
@@ -160,7 +161,7 @@ red.data %>%
     x = "Body mass (grams)",
     y = "Frequency"
   ) +
-  scale_x_continuous(breaks=seq(160,300,by=20)) +
+  scale_x_continuous(breaks = seq(160,300,by = 20)) +
   theme_classic()
 
 
@@ -176,7 +177,7 @@ red.data %>%
     x = "Body mass (grams)",
     y = "Frequency"
   ) +
-  scale_x_continuous(breaks=seq(160,300,by=20)) +
+  scale_x_continuous(breaks = seq(160,300,by = 20)) +
   theme_classic()
 
 #But what's going on here?
@@ -190,7 +191,7 @@ red.data %>%
     x = "Body mass (grams)",
     y = "Frequency"
   ) +
-  scale_x_continuous(breaks=seq(160,300,by=20)) +
+  scale_x_continuous(breaks = seq(160,300,by = 20)) +
   theme_classic()
 
 
@@ -208,7 +209,7 @@ red.data %>%
     x = "Body mass (grams)",
     y = "Frequency"
   ) +
-  scale_x_continuous(breaks=seq(160,300,by=20)) +
+  scale_x_continuous(breaks = seq(160,300,by = 20)) +
   theme_classic() +
   scale_fill_viridis(discrete = T) #adding the viridis palatte
 
@@ -222,7 +223,7 @@ red.data %>%
     x = "Body mass (grams)",
     y = "Frequency"
   ) +
-  scale_x_continuous(breaks=seq(160,300,by=20)) +
+  scale_x_continuous(breaks = seq(160,300,by = 20)) +
   theme_classic() +
   scale_fill_viridis(discrete = T, begin = 0.3, end = 0.8)
 
@@ -282,14 +283,14 @@ red.data %>%
     x = "Body mass (grams)",
     y = "Frequency"
   ) +
-  scale_x_continuous(breaks=seq(160,300,by=20)) +
+  scale_x_continuous(breaks = seq(160,300,by = 20)) +
   theme_classic() +
   scale_fill_viridis(discrete = T, begin = 0.3, end = 0.8, option = "magma") +
   theme(legend.position = c(0.2, 0.8),
-        legend.title = element_text(colour="dark blue", size=10,
-                                    face="bold"),
-        legend.text = element_text(colour="dark blue", size=10,
-                                   face="bold"))
+        legend.title = element_text(colour = "dark blue", size = 10,
+                                    face = "bold"),
+        legend.text = element_text(colour = "dark blue", size = 10,
+                                   face = "bold"))
 
 ##Remove the plot legend -----
 
@@ -301,10 +302,10 @@ red.data %>%
     x = "Body mass (grams)",
     y = "Frequency"
   ) +
-  scale_x_continuous(breaks=seq(160,300,by=20)) +
+  scale_x_continuous(breaks = seq(160,300,by=20)) +
   theme_classic() +
   scale_fill_viridis(discrete = T, begin = 0.3, end = 0.8, option = "magma") +
-  theme(legend.position='none')
+  theme(legend.position ='none')
 
 #BUT this isn't a very good way of visualizing sex differences in body mass....
 
@@ -317,7 +318,7 @@ red.data %>%
     x = "Sex",
     y = "Body Mass"
   ) +
-  scale_y_continuous(breaks=seq(160,300,by=20)) +
+  scale_y_continuous(breaks = seq(160,300,by = 20)) +
   theme_classic()
 
 
@@ -326,6 +327,7 @@ red.data %>%
 #Using facet_grid -------
 
 table(data$Category)
+summary(data$Mass)
 
 data %>%
   ggplot(aes(x = Sex, y = Mass)) +
@@ -334,7 +336,127 @@ data %>%
     x = "Sex",
     y = "Body Mass"
   ) +
-  scale_y_continuous(breaks=seq(160,300,by=20)) +
+  scale_y_continuous(breaks = seq(100,300,by = 20)) +
+  theme_classic() +
+  facet_grid(cols = vars(Category)) #can alter whether this is organized by column or row
+
+#Add color to this
+
+data %>%
+  ggplot(aes(x = Sex, y = Mass, fill = Category)) +
+  geom_boxplot() +
+  labs(
+    x = "Sex",
+    y = "Body Mass"
+  ) +
+  scale_y_continuous(breaks = seq(100,300,by = 20)) +
+  theme_classic() +
+  facet_grid(cols = vars(Category)) +
+  scale_fill_viridis(discrete = T, begin = 0.3, end = 0.9)
+
+
+#Let's try a scatter plot -----
+
+#Look at the relationship between mass and incisor bite force
+
+data %>%
+  ggplot(aes(x = Mass, y = Incisor_BiteForce)) +
+  geom_point()
+
+##Prettify the figure ----
+
+data %>%
+  ggplot(aes(x = Mass, y = Incisor_BiteForce)) +
+  geom_point() +
+  labs(
+    x = "Body mass (grams)",
+    y = "Incisor Bite Force") +
+  scale_y_continuous(breaks = seq(25, 50, by = 5)) +
+  scale_x_continuous(breaks = seq(100, 300, by = 20)) +
+  theme_classic()
+
+##Add a line of best fit -----
+
+data %>%
+  ggplot(aes(x = Mass, y = Incisor_BiteForce)) +
+  geom_point() +
+  labs(
+    x = "Body mass (grams)",
+    y = "Incisor Bite Force") +
+  scale_y_continuous(breaks = seq(25, 50, by = 5)) +
+  scale_x_continuous(breaks = seq(100, 300, by = 20)) +
+  theme_classic() +
+  stat_smooth(method = "lm")
+
+#Maybe we expect the relationship between bite force and mass to depend on the species....?
+
+#Note that here we have to use "color" rather than "fill" and "scale_color_viridis" rather than "scale_fill_viridis"
+
+data %>%
+  ggplot(aes(x = Mass, y = Incisor_BiteForce, color = Category)) +
+  geom_point() +
+  labs(
+    x = "Body mass (grams)",
+    y = "Incisor Bite Force") +
+  scale_y_continuous(breaks = seq(25, 50, by = 5)) +
+  scale_x_continuous(breaks = seq(100, 300, by = 20)) +
+  theme_classic() +
+  stat_smooth(method = "lm") +
+  scale_color_viridis(discrete = T, begin = 0.3, end = 0.9)
+
+#Bonus- rather than just plotting three differently coloured lines for each species, how would you plot the body mass/bite force relationship for each species in a separate panel? Try it if you're feeling bold.
+
+#Combine into multi-paneled figure -----
+#Finally let's combine the 3 figures we made into a single figure
+
+library(ggeffects)
+
+#First step is we need to assign each of our figures to an object
+
+graph1 <- red.data %>%
+  ggplot(aes(x = Mass, fill = Sex)) +
+  geom_histogram(binwidth = 10, colour = "black") +
+  labs(
+    title = "Histogram of red squirrel body mass",
+    x = "Body mass (grams)",
+    y = "Frequency"
+  ) +
+  scale_x_continuous(breaks=seq(160,300,by=20)) +
+  theme_classic() +
+  scale_fill_viridis(discrete = T, begin = 0.3, end = 0.8, option = "magma")
+
+graph2 <- data %>%
+  ggplot(aes(x = Sex, y = Mass)) +
+  geom_boxplot() +
+  labs(
+    x = "Sex",
+    y = "Body Mass"
+  ) +
+  scale_y_continuous(breaks = seq(100,300,by = 20)) +
   theme_classic() +
   facet_grid(cols = vars(Category))
 
+graph3 <- data %>%
+  ggplot(aes(x = Mass, y = Incisor_BiteForce, color = Category)) +
+  geom_point() +
+  labs(
+    x = "Body mass (grams)",
+    y = "Incisor Bite Force") +
+  scale_y_continuous(breaks = seq(25, 50, by = 5)) +
+  scale_x_continuous(breaks = seq(100, 300, by = 20)) +
+  theme_classic() +
+  stat_smooth(method = "lm") +
+  scale_color_viridis(discrete = T, begin = 0.3, end = 0.9)
+
+#Now use the ggarrange function to plot together
+
+ggarrange(graph1, graph2, graph3, ncol = 2, nrow = 2)
+
+
+#Now an example for you to try -------
+
+#The data collected here was actually used in a paper to explore interspecific divergence in dietary ecomorphology. With this in mind, can you create a graph showing the differences in BFQ (bite force quotient) between each species? What type of graph will you need to illustrate this?
+
+#Could you then split this figure to show differences between the sexes in BFQ for each species?
+
+#Can you make each sex a different color?
