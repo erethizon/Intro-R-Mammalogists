@@ -1,0 +1,37 @@
+---
+title: "My First Markdown"
+author: "Sean"
+date: "2023-07-17"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+```
+
+## My first Markdown
+
+Mammals are so cool. Let's look at biteforce...
+
+```{r}
+Measurements <- read_excel("data/Poorboyetal_Hybridization_Measurements.xls")
+
+names(Measurements)
+
+## Getting help ####
+# ?plot
+# help(plot)
+
+# plotting #####
+
+#### Plotting two variables as a formula ####
+plot(Incisor_BiteForce~LogMass, data=Measurements)
+
+m1 <- lm(Incisor_BiteForce~LogMass, data=Measurements)
+
+abline(m1)
+
+summary(m1)
+
+```
