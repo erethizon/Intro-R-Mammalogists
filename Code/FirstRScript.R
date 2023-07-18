@@ -15,7 +15,7 @@ Measurements <- readxl::read_excel("data/Poorboyetal_Hybridization_Measurements.
 
 # Reviewing objects in the console ####
 names(Measurements)
-head(Measurements) # Erika will show you an alternative from the tidyverse, DF()
+head(Measurements) # Erika will show you an alternative from the tidyverse, str()
 class(Measurements) 
 
 ## Getting help with the plot function ####
