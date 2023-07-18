@@ -16,7 +16,6 @@ To wrangle data with the tidyverse, we use the `dplyr` package "verbs" via these
 * `select()` grabs columns
 * `filter()` grabs rows matching particular conditions
 * `mutate()` creates new variables
-
 * `summarise()` provides a summary of values
 * `group_by()` allows you to use any of the above operations "by group"
 
@@ -49,25 +48,25 @@ Let's grab just the columns that include the Category, Sex and Incisor_L using t
 Tidyverse functions accept the data frame as their first argument, and what you want to do to the data frame as next arguments.
 
 ```{r}
-select(DF, c(Category, Sex, Incisor_L))
+select(DF, Category, Sex, Incisor_L)
 ```
 
 Try using select to get just Mass and Incisor_BiteForce
 
 ```{r}
-select(DF, c(Mass, Incisor_BiteForce))
+select(DF, Mass, Incisor_BiteForce)
 ```
 You can imagine that the "nestedness" could get hard to read, so an alternative is to use *piping* and the piping operator ` %>% `. Every time you see the piping operator, you can subsitute the words "and then" in your mind.
 
 Thus, we can reach the same end with the following code
 
 ```{r}
-DF %>% select(c(Mass, Incisor_BiteForce)) # read as "Take DF and then select the Mass and Incisor_BiteForce columns
+DF %>% select(Mass, Incisor_BiteForce) # read as "Take DF and then select the Mass and Incisor_BiteForce columns
 ```
 
 And you can save the result as a new object if you assign it:
 ```{r}
-BiteByMass <-DF %>% select(c(Mass, Incisor_BiteForce))
+BiteByMass <-DF %>% select(Mass, Incisor_BiteForce)
 ```
 
 ## Choose rows matching particular conditions with `filter()`
@@ -110,13 +109,19 @@ Let's see how we could add a new variable to the data frame. Say we want to crea
 DF<- DF %>% mutate(IncisorSize = Incisor_L*Incisor_W)
 ```
 
+Now let's get a smaller data set to work with
+
+```{r}
+MassSpeciesSex<-DF %>% select(`Museum ID`, Category, Group, Sex, Mass )
+```
+
 ## Obtain summary values for specific subests of your data
 A very common approach for getting new summary tables from your data is the combination of using the `group_by()` and `summarise()` functions together.
 
 For example, maybe we want to know mean and sd of body mass by sex
 
 ```{r}
-MeanMass <- DF %>% group_by(Sex) %>% summarise(
+MeanMass <- MassSpeciesSex %>% group_by(Sex) %>% summarise(
   mean_mass = mean(Mass, na.rm = T),
   sd_mass = sd(Mass, na.rm = T)
 )
@@ -124,12 +129,56 @@ MeanMass <- DF %>% group_by(Sex) %>% summarise(
 
 Or maybe you want it by sex and category
 ```{r}
-MeanMassByCat <- DF %>% group_by(Category, Sex) %>% summarise(
+MeanMassByCat <- MassSpeciesSex %>% group_by(Category, Sex) %>% summarise(
   mean_mass = mean(Mass, na.rm = T),
   sd_mass = sd(Mass, na.rm = T)
 ) 
 ```
 
-## Combining what you've seen
-Create a new data set consisting of female Douglass squirrels. Determine the mean and sd of body mass for the parental range and hybrid zone groups. 
+## Applying what you've learned
+Create a new data frame from the larger data set consisting of female Douglass squirrels. Determine the mean and sd of body mass for the parental range and hybrid zone groups and save the summary results in a new data frame.
+
+
+
+
+
+
+Here is a possible work-flow to answer the questions at line 133:
+```{r}
+DougF<-DF %>% filter(Category == "Doug" & Sex == "F") #isolates just female douglass squirrels
+
+DougFMeans<-DougF %>% group_by(Group) %>% summarise(
+  MeanMass = mean(Mass, na.rm = T),
+  sdMass = sd(Mass, na.rm = T)
+)
+```
+
+## If time permits, reshaping data tables.
+In general, data analysis in the R framework usually wants data in what is called "long" (vs. "wide") format in which every row is a single observation and every column is a variable.  Our data set is structured in that way currently.  However, there are times in which certain packages require data in a "wide" format or instances in which the data come in in a wide format and need to be reshaped to long format.  Reshaping of the data frame can be accomplished by two tidyverse functions, `pivot_longer()` and `pivot_wider()`
+
+Let's look at an example. 
+
+Let's look at MassSpeciesSex 
+```{r}
+View(MassSpeciesSex)
+```
+
+Now imagine we needed a separate column for each sex with the mass data in each column.
+
+We would be going from long (one column indicating sex) to wide (two columns indicating sex)
+
+We use `pivot_wider()` in the `tidyr` package to do so:
+
+```{r}
+library(tidyr)
+#library(tidyverse)
+MSS_wide <- MassSpeciesSex %>% pivot_wider(id_cols = c(Category,Group), id_expand = T, names_from = Sex, values_from = Mass)
+View(MSS_wide)
+```
+And what if we wanted to reshape MSS_wide to long format by combining the M and F columns into one Sex column? We would use `pivot_longer`.
+
+```{r}
+MSS_long<-MSS_wide %>% pivot_longer(M:`F`,names_to = "Sex", values_to = "Mass")
+```
+
 
