@@ -1,2 +1,2 @@
 # Intro-R-Mammalogists
-Repo for 2023 ASM workshop on introducing Mammalogists to R
+Repo for American Society of Mammalogists workshop on introducing Mammalogists to R
