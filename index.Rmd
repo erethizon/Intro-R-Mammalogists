@@ -1,7 +1,7 @@
 ---
 title: "Intro-R-Mammalogists"
 description: |
-  Website for the Introduction to R for Mammalogists Workshop
+  
 site: distill::distill_website
 ---
 
@@ -13,3 +13,20 @@ knitr::opts_chunk$set(echo = FALSE)
 
 ```
 
+# Introduction to R for Mammalogists Workshop
+#### June 7, 2024, 8:00 am - 12:00 pm
+
+# Workshop Leaders
+### [Erika Barthelmess](https://github.com/erethizon)
+Professor of Biology, St. Lawrence University, Canton, NY, USA
+
+[Email Erika](mailto:barthelmess@stlawu.edu)
+
+### [Marissa Dyck](https://github.com/marissadyck)
+
+[Email Marissa](mailto:marissadyck17@gmail.com)
+
+### Sean P. Maher
+Associate Professor of Biology, Missouri State University, Springfield, MO, USA
+
+[Email Sean](mailto:SPMaher@MissouriState.edu)

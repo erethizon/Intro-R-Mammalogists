@@ -6,15 +6,14 @@
       "description": "Some additional details about the website",
       "author": [],
       "contents": "\n\n\n\n",
-      "last_modified": "2024-05-14T17:09:39-04:00"
+      "last_modified": "2024-05-14T17:18:38-04:00"
     },
     {
       "path": "index.html",
       "title": "Intro-R-Mammalogists",
-      "description": "Website for the Introduction to R for Mammalogists Workshop\n",
       "author": [],
-      "contents": "\n\n\n\n",
-      "last_modified": "2024-05-14T17:09:42-04:00"
+      "contents": "\nIntroduction to R for Mammalogists Workshop\nJune 7, 2024, 8:00 am - 12:00 pm\nWorkshop Leaders\nErika Barthelmess\nProfessor of Biology, St. Lawrence University, Canton, NY, USA\nEmail Erika\nMarissa Dyck\nEmail Marissa\nSean P. Maher\nAssociate Professor of Biology, Missouri State University, Springfield, MO, USA\nEmail Sean\n\n\n\n",
+      "last_modified": "2024-05-14T17:18:39-04:00"
     }
   ],
   "collections": []
