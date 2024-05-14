@@ -13,3 +13,6 @@ RnwWeave: Sweave
 LaTeX: pdfLaTeX
 
 StripTrailingWhitespace: Yes
+
+BuildType: Website
+WebsitePath: /Users/barthelmess/Library/CloudStorage/Dropbox/R/Intro-R-Mammalogists
