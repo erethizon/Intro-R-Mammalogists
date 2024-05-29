@@ -1486,62 +1486,7 @@ You're going to plot the distance from available surface water for zebras in the
 
 >*hint: we didn't cover all of these so use the help file or google to try to explore how to apply some of these changes to your plot. If you get stuck we will go over it at the end.*  
 
-```{r, class.source = 'fold-hide'}
+```{r}
 
-# create vectors of the labels for the plot
-river_lables <- c('Upstream', 'Midstream', 'Downstream')
-
-
-# now for the plot!
-
-# use the data
-stommel_data %>% 
-  
-  # subset data to just zebras
-  filter(species == 'Z') %>% 
-  
-  # pipe into ggplot to avoid saving to env
-ggplot(.,
-       aes(x = distance_to_water_rounded,
-           y = species_count)) +
-  
-  # add points
-  geom_point(aes(shape = river_class,
-                 fill = river_class),
-             alpha = 0.9,
-             size = 2) +
-  
-  # custom colors and shapes
-  scale_fill_manual(labels = river_lables,
-                     values = c('gray100', 'gray60','gray5')) +
-  scale_shape_manual(labels = river_lables,
-                     values = c(24,
-                                22,
-                                21)) +
-  
-  # labels and title
-  labs(x = 'Distance to water (meters)',
-       y = 'Individuals',
-       title = str_wrap('Distance from available surface water of zebras in Ruaha National Park',
-                        40),
-       fill = 'River classification',
-       shape = 'River classification') + # have to include both for one legend 
-  
-  # set axis limits
-  scale_x_continuous(breaks = seq(0, 7000, by = 1000)) +
-  scale_y_continuous(breaks = seq(0, 20, by = 5)) +
-  
-  # reduce plot size
-  coord_cartesian(xlim = c(0,7000),
-                  ylim = c(0, 20)) +
-  
-  # set theme elements
-  theme_classic() +
-  theme(panel.grid.major = element_line(color = 'gray90',
-                                        size = 0.5),
-        text = element_text(size = 14),
-        axis.title = element_text(size = 15),
-        plot.title = element_text(size = 16,
-                                  hjust = 0.5))
 ```
 
