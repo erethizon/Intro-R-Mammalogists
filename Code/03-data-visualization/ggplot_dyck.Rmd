@@ -1462,7 +1462,7 @@ str(stommel_data)
 summary(stommel_data)
 ```
 
-> Here is a link to data information on [dryd](https://datadryad.org/stash/dataset/doi:10.5061/dryad.4qrfj6qgx)
+> Here is a link to data information on [dryad](https://datadryad.org/stash/dataset/doi:10.5061/dryad.4qrfj6qgx)
 
 Time to make a plot on your own!
 
