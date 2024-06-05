@@ -13,17 +13,29 @@ Now that we've learned how to get some data into R and establish a well-organize
 
 The data we will use come from [this paper](https://nsojournals.onlinelibrary.wiley.com/doi/10.1002/wlb3.01131) and can be accessed [from dryad here](https://datadryad.org/stash/dataset/doi:10.5061/dryad.4qrfj6qgx)
 
+## Set things up
+
+Before we get started, let's write some code that helps us to set up our workspace. I like to include code similar to this at the top of every .Rmd file I create. In it, we will clear the R environment, in case there is anything saved in memory that might cause hiccups while we work, and turn on all of the packages that we will work with.
+
+```{r}
+rm(list = ls()) #clears R's "environment" of any objects or variables
+
+library(tidyverse) #turns on dplyr, tidyr, ggplot2 and other helpful packages from the tidyverse. Note that each package can also be turned on individually, e.g. library(dplyr) or library(ggplot2)
+
+library(here) #turns on a package that is helpful for navigating file paths when you are working. This package is especially helpful if you save your project in the cloud an access it from different physical machines.
+```
+
 To wrangle data with the tidyverse, we use the `dplyr` package "verbs" via these functions:
 
 \-`select()` grabs columns
 
 \-`filter()` grabs rows matching particular conditions
 
-\-`mutate()` creates new variables
-
 \-`summarise()` provides a summary of values
 
 \-`group_by()` allows you to use any of the above operations "by group"
+
+\-`mutate()` creates new variables
 
 If there is time, we'll also discuss reshaping a data frame with `pivot_longer()` and `pivot_wider()`.
 
@@ -39,31 +51,44 @@ library(here) #here package helps "point" at file paths
 DF <- read.csv(here("Data","stommel_mastertable_dryad.csv"))
 ```
 
-Now get and turn on the packages we need
-
-```{r}
-#install.packages("tidyverse") #installs whole set of packages including dplyr, ggplot2, etc.
-#install.packages("dplyr") #installs just dplyr package
-
-library(dplyr) #turns on just the dplyr package
-#library(tidyverse) #turns on all of the packages from the tidyverse
-```
-
 Let's look at the basic structure of our dataset
 
 ```{r}
 str(DF) #output is overall structure of dataset
-summary(DF)
+summary(DF) #provides a summary for each variable
 ```
 
-## Using `select()` to grab columns
+You can see from the `str()` call that the data are organized in a `data.frame` with 3686 rows and 23 variables (columns). This is a dataset from a study that was investigating the proximity with which different species of Plains game were observed along a river in Ruaha National Park, Tanzania. Important columns for our purposes include:
+
++-------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+
+| Variable Name     | Variable Description                                                                                                                                |
++===================+=====================================================================================================================================================+
+| transect_id       | the number assigned to each transect along which observations were made                                                                             |
++-------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+
+| dry_season        | The phenological phase of the dry season; choices are "early" or "late"                                                                             |
++-------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+
+| river_class       | Location of perpendicular transect relative to the river; choices are "1_upstream", "2_midstream", and "3_downstream"                               |
++-------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+
+| distance_to_water | The distance (m) to water at which the group of animals was observed                                                                                |
++-------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+
+| species           | Code used to identify herbivore species; choices are:\                                                                                              |
+|                   | "I" = impala, "Z" = zebra, "Wh" = warthog, "G" = giraffe, "K" = greater kudu, "Wb" = waterbuck, "E" = elephant, "B" = buffalo, "CD" = common duiker |
++-------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+
+| feed_type_A_char  | Code used to identify feeding pattern; choices are: "mixed" , "grazer", "omni", "browser"                                                           |
++-------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+
+| species_count     | The number of individuals of the species that were observed at that location along the transect                                                     |
++-------------------+-----------------------------------------------------------------------------------------------------------------------------------------------------+
+
+: Key variables in Ruaha dataset
+
+## Use `select()` to grab specific columns
 
 Let's grab just the columns that include the dry_season, distance_to_water and species columns using the `select()` function.
 
 Tidyverse functions accept the data frame as their first argument, and what you want to do to the data frame as next arguments.
 
 ```{r}
-select(DF, dry_season, distance_to_water, species)
+select(DF, dry_season, distance_to_water, species) #tells R to go into the object called DF and choose the dry_season, distance_to_water and species columns
 ```
 
 Try using select to get just `species`, feeding type (`feed_type_A_char`) and count of individuals (`species_count`)
@@ -72,7 +97,7 @@ Try using select to get just `species`, feeding type (`feed_type_A_char`) and co
 select(DF, species, feed_type_A_char, species_count)
 ```
 
-You can imagine that the "nestedness" could get hard to read, so an alternative is to use *piping* and the piping operator `%>%`. Every time you see the piping operator, you can substitute the words "and then" in your mind.
+You can imagine that the "nestedness" within a `select` statement could get hard to read, so an alternative is to use *piping* and the piping operator `%>%`. Every time you see the piping operator, you can substitute the words "and then" in your mind.
 
 Thus, we can reach the same end with the following code
 
@@ -80,15 +105,18 @@ Thus, we can reach the same end with the following code
 DF %>% select(species, feed_type_A_char, species_count) # read as "Take DF and then select the species, feeding type and number of individuals columns from it"
 ```
 
-And you can save the result as a new object if you assign it:
+So far, we've just been seeing what `select()` can do without actually saving any of our work. We can assign the results of these operations to a new object, which makes them easier to use later.
+
+Here's how:
 
 ```{r}
-Spec_counts <- DF %>% select(species, feed_type_A_char, species_count)
+Spec_counts <- DF %>% select(species, feed_type_A_char, species_count) #creates a new object called "Spec_counts" with the columns species, feed_type_A_char, and species_count
+
 ```
 
 ## Choose rows matching particular conditions with `filter()`
 
-We may need to know what the values of a particular variable are in order to see which rows match a particular value. We can use `unique()` to identify those values.
+The `filter()` function allows you to query a data frame to find just the observations that meet particular conditions. In order to do so, though, we may need to know the levels of our categorical variables. We can use `unique()` to identify those values.
 
 How many values are there in the species variable?
 
@@ -103,15 +131,15 @@ unique(DF$dry_season)
 unique(DF$feed_type_A_char)
 ```
 
-Now look at using `filter()` to grab rows meeting particular conditions.
+Now let's use `filter()` to grab rows meeting particular conditions.
 
-Let's get all the impala
+First, let's get all the impala data and save them into a new object called `impala`:
 
 ```{r}
 impala <- DF %>% filter(species == "I")
 ```
 
-Let's get all the mixed feeders
+Now let's get all the `mixed` feeders:
 
 ```{r}
 DF %>% filter(feed_type_A_char == "mixed")
@@ -123,27 +151,27 @@ And how about all of the observations within 500m of water
 DF %>% filter(distance_to_water <= 500)
 ```
 
-We can also combine terms within a `filter()`statement:
+We can also combine terms within a `filter()`statement for more complex queries.
 
-Now let's get all of the mixed feeders less than 100 m from water
+For example, let's grab all of the mixed feeders that were observed less than 100 m from water
 
 ```{r}
 DF %>% filter(feed_type_A_char == "mixed" & distance_to_water < 100)
 ```
 
-## Obtain summary values for specific subests of your data
+## Obtain summary values for specific subsets of your data
 
-A very common approach for getting new summary tables from your data is the combination of using the `group_by()` and `summarise()` functions together.
+A very common approach for getting new summary tables from your data is using the `group_by()` and `summarise()` functions from the `dplyr` package together.
 
-For example, maybe we want to know the mean distance to water observed for each species
+For example, maybe we want to know the mean distance to water observed for each species:
 
 ```{r}
-MeanDist <- DF %>% group_by(species) %>% summarise(
+DF %>% group_by(species) %>% summarise(
   mean_dist_water = mean(distance_to_water, na.rm = T)
 )
 ```
 
-We can also group by more than one variable; for each group, you will get a new column in your summary table. And we can add multiple outputs to our summarise() statement
+We can also group by more than one variable. For each variable included in a `group_by` statement, you will get a new column in your summary table. We can also add multiple outputs to our `summarise()` statement and we can save the results of our work in a new object called `MeanDist`:
 
 ```{r}
 MeanDist <- DF %>% group_by(feed_type_A_char, species) %>% summarise(
@@ -158,27 +186,37 @@ MeanDist <- DF %>% group_by(feed_type_A_char, species) %>% summarise(
 Let's see how we could add a new variable to the data frame. Say we want to create a new variable called "Mean_from_max" that is maximum distance to water per species minus the mean distance:
 
 ```{r}
-MeanDist<- MeanDist %>% mutate(Mean_from_max = max_dist_water - mean_dist_water)
+MeanDist<- MeanDist %>% mutate(Mean_from_max = max_dist_water - mean_dist_water) #use the mutate function to create a new variable called Mean_from_max in which we subtract the mean distance to water from the maximum distance to water
 ```
 
-## Applying what you've learned
+What if we now wanted to save this new data frame to share with a colleague or read into some other project.
 
-Create a new data frame from the larger data set consisting of female Douglass squirrels. Determine the mean and sd of body mass for the parental range and hybrid zone groups and save the summary results in a new data frame.
+We can use `write.csv` to do so.
 
-Here is a possible work-flow to answer the questions at line 133:
+Let's look at how to save the `MeanDist` dataframe we just made.
 
 ```{r}
-DougF<-DF %>% filter(Category == "Doug" & Sex == "F") #isolates just female douglass squirrels
+#option 1 - assuming relative file paths built in with the project
 
-DougFMeans<-DougF %>% group_by(Group) %>% summarise(
-  MeanMass = mean(Mass, na.rm = T),
-  sdMass = sd(Mass, na.rm = T)
-)
+write.csv(MeanDist, file = "Outputs/Mean_dist_water_option1.csv", row.names = F)
+
+#write.csv takes the name of the dataframe you wish to save and the location where the file should be saved including the file name as arguments. 
+
+#row.names = F prevents R from adding a first column of row numbers
+
+#option 2 - using here package
+#here package is especially helpful if you store your project in a cloud location like Dropbox or Onedrive and access the project from different computers.
+
+write.csv(MeanDist, here("Outputs", "mean_distance_water_option2.csv"), row.names = F) 
+
+
+#Like option 1, write.csv takes the name of the dataframe and the location to save the file as arguments, but in this case we use the here package to specify the location where the file should be saved.
+
 ```
 
 ## If time permits, reshaping data tables.
 
-In general, data analysis in the R framework usually wants data in what is called "long" (vs. "wide") format in which every row is a single observation and every column is a variable. Our data set is structured in that way currently. However, there are times in which certain packages require data in a "wide" format or instances in which the data come in in a wide format and need to be reshaped to long format. Reshaping of the data frame can be accomplished by two tidyverse functions, `pivot_longer()` and `pivot_wider()`
+In general, data analysis in the R framework usually wants data in what is called "long" (vs. "wide") format in which every row is a single observation and every column is a separate variable. Our data set is structured in that way currently. However, there are times in which certain packages require data in a "wide" format or instances in which the data come in in a wide format and need to be reshaped to long format. Reshaping of the data frame can be accomplished by two tidyverse functions, `pivot_longer()` and `pivot_wider()`
 
 Let's look at an example.
 
@@ -190,168 +228,122 @@ Sp_by_trans <- DF %>% group_by(transect_id, species) %>% summarise(
 )
 ```
 
-The `vegan` package is very useful for calculating diversity indices as well as for things like community ordination, but it requires that the data be structured with one column per species and one row per site (or transect). Let's see if we can get the data shaped in that way.
+Our new Sp_by_trans dataframe is in long format; there is a single column for the transect id, a single column for species and a single column for the number of animals.
 
-We would be going from long (one column indicating species) to wide (a new column for each species)
+Let's say we wanted to calculate the Shannon or Simpson's Diversity Index for each transect. The `vegan` package is very useful for calculating diversity indices as well as for things like community ordination, but it requires that the data be structured with one column per species and one row per site (or transect). In other words, `vegan` requires a **wide** format.Let's see if we can get the data shaped in that way.
 
 We use `pivot_wider()` in the `tidyr` package to do so:
 
 ```{r}
 #install.packages("tidyr") #only required if you did not install whole tidyverse
-library(tidyr) #turns on tidyr package. 
-#library(tidyverse)
-Transects_wide <- Sp_by_trans %>% pivot_wider(names_from = species, values_from = num_animals)
+
+#library(tidyr) #turns on tidyr package; only required if you did not turn on the whole tidyverse package above.
+
+Transects_wide <- Sp_by_trans %>% pivot_wider(names_from = species, values_from = num_animals) 
+
+#read as "Take the Sp_by_trans dataframe and reshape it to a wide format; obtain the new column names from the species column and the values to put in the cells from the num_animals column"
 ```
 
-## Your Turn!
-
-## Using `select()` to grab columns
-
-Let's grab just the columns that include the Category, Sex and Incisor_L using the `select()` function.
-
-Tidyverse functions accept the data frame as their first argument, and what you want to do to the data frame as next arguments.
+Notice that we can go back the other way by casting a wide data frame to a long format. Let's reverse what we just did with `pivot_longer()`. This time, we'll need to tell R which columns from our wide data set that we want to make long. In our case, it will be all of the species columns.
 
 ```{r}
-select(DF, Category, Sex, Incisor_L)
+Transects_long <- Transects_wide %>% pivot_longer(cols = CD:Wb, names_to = "species_code", values_to = "number_animals")
 ```
 
-Try using select to get just Mass and Incisor_BiteForce
+Question: WHY did the data frame we started with (`Sp_by_trans`) have only 78 rows and our new, long format data frame (`Transects_long`) has 90?
+
+Now, as one last step, let's see how we replace all of the NA values in our dataframe with zeroes.
+
+Look at `Transects_wide` again for a minute
 
 ```{r}
-select(DF, Mass, Incisor_BiteForce)
+View(Transects_wide)
 ```
 
-You can imagine that the "nestedness" could get hard to read, so an alternative is to use *piping* and the piping operator `%>%`. Every time you see the piping operator, you can subsitute the words "and then" in your mind.
-
-Thus, we can reach the same end with the following code
+In this case, the NAs are instances were no animals were observed, so we could justifiably replace the NA values with zeroes. We can do so quickly with the `is.na` function.
 
 ```{r}
-DF %>% select(Mass, Incisor_BiteForce) # read as "Take DF and then select the Mass and Incisor_BiteForce columns
+Transects_wide[is.na(Transects_wide)] <- 0 
+
+#this is a base R way to find values of NA and replace with 0. 
 ```
 
-And you can save the result as a new object if you assign it:
+## Your turn!
+
+Go to the new Rmd file and the data set you started working on at the end of Sean's part of the workshop, the *Tamiasciurus* data. (Reminder: the data come from [this paper](https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0284094) and can be accessed [from dryad here](https://datadryad.org/stash/dataset/doi:10.5061/dryad.kd51c5bbg)).
+
+In that same .Rmd file, see if you can accomplish the following steps using the skills we've just been working on.
+
+1.  Create a dataset with fewer variables by saving a new object called "Squirrels" that includes just the Category, Group, Sex, Mass, Incisor_L, Incisor_W and Incisor_BiteForce columns.
+
+(hint: `select()`...)
+
+2.  How many male red squirrels are there with body mass greater than 200 grams?
+
+(hint: `filter()`)
+
+3.  Next, create a new data frame called Doug_F from the Squirrels data set consisting only of female Douglas squirrels.
+
+(hint: `filter()`)
+
+4.  Using the female douglas squirrel data, determine the mean and sd of body mass for the parental range and hybrid zone groups.
+
+(hint: `group_by()` and `summarise()`)
+
+5.  Create a new variable in the Doug_F data frame called "Incisor_Size" that is equal to Incisor_L x Incisor_W.
+
+(hint: `mutate()`)
+
+6.  Save the object you created called Squirrels in the Outputs folder of your project and call it "Squirrels.csv"
+
+(hint: `write.csv()`)
+
+## Solution
 
 ```{r}
-BiteByMass <-DF %>% select(Mass, Incisor_BiteForce)
+#read in data
+library(here)
+library(readxl)
+DF <- read_excel(here("Data","Poorboyetal_Hybridization_Measurements.xls"))
 ```
 
-## Choose rows matching particular conditions with `filter()`
-
-We may need to know what the values of a particular variable are in order to see which rows match a particular value. We can use `unique()` to identify those values.
-
-How many values are there in the Category variable?
+1.  Create a dataset with fewer variables by saving a new object called "Squirrels" that includes just the Category, Group, Sex, Mass, Incisor_L, Incisor_W and Incisor_BiteForce columns.
 
 ```{r}
-unique(DF$Category)
+Squirrels <- DF %>% select(Category, Group, Sex, Mass, Incisor_L, Incisor_W, Incisor_BiteForce)
 ```
 
-And in the Group and Sex variables?
+2.  How many male red squirrels are there with body mass greater than 200 grams?
 
 ```{r}
-unique(DF$Group)
-unique(DF$Sex)
+Squirrels %>% filter(Category == "Red" & Sex == "M" & Mass > 200)
 ```
 
-Now look at using `filter()` to grab rows meeting particular conditions.
-
-Let's get all the Red squirrels
+3.  Next, create a new data frame called Doug_F from the Squirrels data set consisting only of female Douglas squirrels.
 
 ```{r}
-Reds <- DF %>% filter(Category == "Red")
+Doug_F <- Squirrels %>% filter(Category == "Doug" & Sex == "F")
 ```
 
-Let's get all the squirrels less than 225 grams
+4.  Using the female Douglas squirrel data, determine the mean and sd of body mass for the parental range and hybrid zone groups.
 
 ```{r}
-DF %>% filter(Mass < 225)
-```
-
-We can also combine terms within a `filter()`statement:
-
-Male Douglas squirrels greater than 200 grams:
-
-```{r}
-BigBoyDoug<-DF %>% filter(Sex == "M" & Category == "Doug" & Mass > 200)
-```
-
-## Create new variables with `mutate()`
-
-Let's see how we could add a new variable to the data frame. Say we want to create a new variable called "IncisorSize" that is incisor length X incisor width:
-
-```{r}
-DF<- DF %>% mutate(IncisorSize = Incisor_L*Incisor_W)
-```
-
-Now let's get a smaller data set to work with
-
-```{r}
-MassSpeciesSex<-DF %>% select(`Museum ID`, Category, Group, Sex, Mass )
-```
-
-## Obtain summary values for specific subests of your data
-
-A very common approach for getting new summary tables from your data is the combination of using the `group_by()` and `summarise()` functions together.
-
-For example, maybe we want to know mean and sd of body mass by sex
-
-```{r}
-MeanMass <- MassSpeciesSex %>% group_by(Sex) %>% summarise(
-  mean_mass = mean(Mass, na.rm = T),
+Doug_F %>% group_by(Group) %>% summarise(
+  mean_mass = mean(Mass, na.rm = T), 
   sd_mass = sd(Mass, na.rm = T)
 )
 ```
 
-Or maybe you want it by sex and category
+5.  Finally, create a new variable in the Doug_F data frame called "Incisor_Size" that is equal to Incisor_L x Incisor_W.
 
 ```{r}
-MeanMassByCat <- MassSpeciesSex %>% group_by(Category, Sex) %>% summarise(
-  mean_mass = mean(Mass, na.rm = T),
-  sd_mass = sd(Mass, na.rm = T)
-) 
-```
-
-## Applying what you've learned
-
-Create a new data frame from the larger data set consisting of female Douglass squirrels. Determine the mean and sd of body mass for the parental range and hybrid zone groups and save the summary results in a new data frame.
-
-Here is a possible work-flow to answer the questions at line 133:
-
-```{r}
-DougF<-DF %>% filter(Category == "Doug" & Sex == "F") #isolates just female douglass squirrels
-
-DougFMeans<-DougF %>% group_by(Group) %>% summarise(
-  MeanMass = mean(Mass, na.rm = T),
-  sdMass = sd(Mass, na.rm = T)
+Doug_F <- Doug_F %>% mutate(
+  Incisor_Size = Incisor_L*Incisor_W
 )
 ```
 
-## If time permits, reshaping data tables.
-
-In general, data analysis in the R framework usually wants data in what is called "long" (vs. "wide") format in which every row is a single observation and every column is a variable. Our data set is structured in that way currently. However, there are times in which certain packages require data in a "wide" format or instances in which the data come in in a wide format and need to be reshaped to long format. Reshaping of the data frame can be accomplished by two tidyverse functions, `pivot_longer()` and `pivot_wider()`
-
-Let's look at an example.
-
-Let's look at MassSpeciesSex
+6.  Save the object you created called Squirrels in the Outputs folder of your project and call it "Squirrels.csv"
 
 ```{r}
-View(MassSpeciesSex)
-```
-
-Now imagine we needed a separate column for each sex with the mass data in each column.
-
-We would be going from long (one column indicating sex) to wide (two columns indicating sex)
-
-We use `pivot_wider()` in the `tidyr` package to do so:
-
-```{r}
-library(tidyr)
-#library(tidyverse)
-MSS_wide <- MassSpeciesSex %>% pivot_wider(id_cols = c(Category,Group), id_expand = T, names_from = Sex, values_from = Mass)
-View(MSS_wide)
-```
-
-And what if we wanted to reshape MSS_wide to long format by combining the M and F columns into one Sex column? We would use `pivot_longer`.
-
-```{r}
-MSS_long<-MSS_wide %>% pivot_longer(M:`F`,names_to = "Sex", values_to = "Mass")
+write.csv(Squirrels, file = "Outputs/Squirrels.csv", row.names = F)
 ```
