@@ -24,12 +24,20 @@ Note that some of these options will not appear like this within the RMarkdown f
 
 ## Let's look at our dataset...
 
-Mammals are so cool. Let's look at biteforce...
+Mammals are so cool. Let's look at bite force...
+
+These data come from here (https://doi:10.5061/dryad.kd51c5bbg) and are associated with this manuscript (https://doi.org/10.1371/journal.pone.0284094).
+
 
 ```{r}
-Measurements <- readxl::read_excel("data/Poorboyetal_Hybridization_Measurements.xls")
+library(here)
+Measurements <- readxl::read_excel(here("data", "Poorboyetal_Hybridization_Measurements.xls"))
+
+Measurements <- readxl::read_excel("C:/Users/Sean Maher/Documents/GitHub/Intro-R-Mammalogists/Data/Poorboyetal_Hybridization_Measurements.xls")
 
 names(Measurements)
+
+# FYI... Words in column names can be separated by a space, but you need to wrap the name with this character -> `
 
 ## Getting help ####
 # ?plot
@@ -51,4 +59,29 @@ abline(m1)
 We can reference our objects in the text field like so...
 
 The linear model included a slope of `r round(m1$coefficients[2], 2)` that was different than zero (*t*= `r round(m1_summary$coefficients[2,3],2)`, df=`r m1_summary$df[2]`, *P* = `r m1_summary$coefficients[2,4]`).
+
+## Sequential versus Piping when writing code
+
+Generally speaking the syntax for code follows flow of creating an object based on a set of instructions designed as a function. Each function has a set of arguments that can modify or detail the action.
+
+```{r}
+## Sequential
+Females <- subset(Measurements, Sex=="F") #Keep track of F and T, which are short for FALSE and TRUE, respectively
+Males <- subset(Measurements, Sex!="F")
+
+Aver_Mass_F<-mean(Females$Mass, na.rm=T) #Notice the dollar sign indicating the column
+Aver_Mass_M<-mean(Males$Mass, na.rm=T)
+
+## Piped
+Aver_Mass_F <- Measurements %>%
+  subset(Sex=="F") %>%
+  pull(Mass)%>% #Notice this extra function call here to indicate which column
+  mean(na.rm=T)
+
+Aver_Mass_M <- Measurements %>%
+  subset(Sex=="M") %>%
+  pull(Mass)%>%
+  mean(na.rm=T)
+
+```
 

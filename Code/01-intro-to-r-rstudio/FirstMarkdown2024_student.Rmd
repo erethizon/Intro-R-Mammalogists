@@ -1,0 +1,41 @@
+---
+title: "My First Markdown"
+author: "Sean"
+date: "2024-06-07"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Try it out yourself!
+
+
+```{r}
+library(here)
+Squirrels <- readxl::read_xlsx(here("data","EuropeanRedSquirrel.xlsx"))
+
+names(Squirrels)
+
+## Getting help ####
+# ?plot
+# help(plot)
+
+# plotting #####
+
+#### Plotting two variables as a formula ####
+plot(`Skull length`~`Skull width`, data=Squirrels)
+
+m1 <- lm(`Skull length`~`Skull width`, data=Squirrels)
+
+abline(m1)
+
+(m1_summary <- summary(m1))
+
+```
+
+We can reference our objects in the text field like so...
+
+The linear model included a slope of `r round(m1$coefficients[2], 2)` that was different than zero (*t*= `r round(m1_summary$coefficients[2,3],2)`, df=`r m1_summary$df[2]`, *P* = `r m1_summary$coefficients[2,4]`).
+
